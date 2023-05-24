@@ -2,7 +2,11 @@
 **First, setup the dependencies by**
 >pip install -r requirements.txt
 
-**1. To reproduce the experiment in Section 4.3, see "r(x, theta) and r(x, theta.de).ipynb" and "r_gan(x).ipynb"**.
+**1. To reproduce the experiment in Section 6, run**
+>python trajectory.py
 
-**2. To reprocude the experiment in Section 5.2. run the following by specifying different Cs**.
->python train_gan.py --C=5.0 --method='vanilla' --saveroot='./saved'
+**2. To reproduce the experiment in Section 7, run**
+>python banana.py
+
+**3. To reproduce the experiment in Appendix B.1, run**
+>python 1d_gmm.py
