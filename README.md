@@ -2,10 +2,10 @@
 **First, setup the dependencies by**
 >pip install -r requirements.txt
 
-**1. To reproduce the experiment in Section 6, run**
->python trajectory.py
+**1. To reproduce the experiment for the Illustrative example, run**
+>see the jupyter notebook file.
 
-**2. To reproduce the experiment in Section 7, run**
+**2. To reproduce the experiment in Figure 3, run**
 >python banana.py
 
 **3. To reproduce the experiment in Appendix B.1, run**
