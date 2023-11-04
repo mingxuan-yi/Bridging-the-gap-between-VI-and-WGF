@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from rosenbrock import rosenbrock
 import os
-from source.base import gmm, contour_plot, h
+from source.base import gmm, h
 import argparse
 sns.set_style("white")
 np.random.seed(2)

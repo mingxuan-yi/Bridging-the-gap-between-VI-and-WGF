@@ -52,7 +52,63 @@ class gmm(torch.nn.Module):
     
     def weights(self):
         return torch.nn.functional.softmax(self.weights_, dim=0)
+
+
+class vi_layer(nn.Module):
+    def __init__(self, input_dim, output_dim, detach):
+        super(vi_layer, self).__init__()
+        self.input_dim = input_dim
+        self.output_dim = output_dim
+        
+        self.weight_mean = nn.Parameter(torch.zeros(self.input_dim, self.output_dim))
+        self.bias_mean = nn.Parameter(torch.ones(self.output_dim))
+                            
+        self.weight_rho = nn.Parameter(torch.zeros(self.input_dim, self.output_dim))
+        self.bias_rho = nn.Parameter(torch.ones(self.output_dim))
+        
+        self.detach=detach
+        
+    def std(self, v):
+        return F.softplus(v)
     
+    def log_prob_q(self, z, mu, rho):
+        
+        if self.detach:
+            output = -0.5 * torch.log(2 * torch.tensor(np.pi)) - \
+                torch.log(self.std(rho.detach())) - (z - mu.detach())**2 / (2*self.std(rho.detach())**2)
+        else:
+            output = -0.5 * torch.log(2 * torch.tensor(np.pi)) - \
+                torch.log(self.std(rho)) - (z - mu)**2 / (2*self.std(rho)**2)
+        return torch.sum(output)  
+    
+    def forward(self, x):
+        weight = self.weight_mean + self.std(self.weight_rho) * torch.randn_like(self.weight_mean)
+        bias = self.bias_mean + self.std(self.bias_rho) * torch.randn_like(self.bias_mean)                               
+        
+        log_prob_w = self.log_prob_q(weight, self.weight_mean, self.weight_rho)
+        log_prob_b = self.log_prob_q(bias, self.bias_mean, self.bias_rho)
+
+        return torch.mm(x, weight) + bias, log_prob_w + log_prob_b
+                                     
+class vi_Model(nn.Module):
+    def __init__(self, input_dim, output_dim, detach=False):
+        super(vi_Model, self).__init__()
+        
+        self.input_dim = input_dim
+        self.output_dim = output_dim
+        
+        # network with two hidden and one output layer
+        self.layer1 = vi_layer(input_dim, output_dim, detach)
+        
+
+    def forward(self, x):
+        
+        x = x.view(-1, self.input_dim)
+        y_, log_p1 = self.layer1(x)
+        y = torch.sigmoid(y_)
+        
+        return y, log_p1
+                                 
     
 def contour_plot(ax, logprob, xlim, ylim, color, num_grid=100, Z_log=False, levels=10):
     
