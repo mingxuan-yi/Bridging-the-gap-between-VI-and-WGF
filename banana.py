@@ -55,7 +55,7 @@ def log_p(x):
     return -p_rosen_dist.nl_pdf(x)
 
 def train(num_iter=args.num_iter, num_groups=args.num_components, num_sample_rep=args.num_sample, method='Rkl', lr=0.01):
-
+    print('Starting training GMM under', method)
     q = gmm(num_groups)
 
     opt = optim.Adam(q.parameters(), lr=0.01)
@@ -70,15 +70,16 @@ def train(num_iter=args.num_iter, num_groups=args.num_components, num_sample_rep
             loss += -q.weights()[k]*(torch.mean(h(r, method)))
         loss.backward()
         opt.step()
+    print('Completed !')
     return q
 
 if __name__ == '__main__':
     if not(os.path.isdir(saveroot)):
         os.mkdir(saveroot)
-    train(method='Rkl')
-    train(method='Fkl')
-    train(method='Chi')
-    train(method='Hellinger')
+    q_rkl = train(method='Rkl')
+    q_fkl = train(method='Fkl')
+    q_chi = train(method='Chi')
+    q_hel = train(method='Hellinger')
     
     fig, axs = plt.subplots(1, 5, figsize=(15, 3.4))
     plot_contour(log_p, axs[0])
