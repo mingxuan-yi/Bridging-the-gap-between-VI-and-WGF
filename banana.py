@@ -35,7 +35,7 @@ b = torch.ones([2, 1])
 
 p_rosen_dist = rosenbrock.RosenbrockDistribution(mu, a, b)
 
-def plot_contour(log_p, ax, xlim=[-1, 2.7], ylim=[-2.5, 8], num_grid=100, name=r'Target $p(x)$'):
+def plot_contour(log_p, ax, xlim=[-1, 2.7], ylim=[-2.8, 8], num_grid=100, name=r'Target $p(x)$'):
 
     xlist = np.linspace(xlim[0], xlim[1], num_grid)
     ylist = np.linspace(ylim[0], ylim[1], num_grid)
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     train(method='Chi')
     train(method='Hellinger')
     
-    fig, axs = plt.subplots(1, 5, figsize=(15, 3.3))
+    fig, axs = plt.subplots(1, 5, figsize=(15, 3.4))
     plot_contour(log_p, axs[0])
     plot_contour(q_rkl.log_prob, axs[1], name='Reverse KL')
     plot_contour(q_fkl.log_prob, axs[2], name='Forward KL')
