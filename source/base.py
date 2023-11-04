@@ -82,13 +82,13 @@ def log_prob_unnormalized(mu, scale, x):
 # define f divergence as f(r)
 def f(r, method='Rkl'):
     if method=='Rkl':
-        return -torch.log(r)
+        return -torch.log(r+1e-8)
     elif method=='Fkl':
-        return r*torch.log(r)
+        return r*torch.log(r+1e-8)
     elif method=='Chi':
         return (r-1)**2
     elif method=='Hellinger':
-        return (torch.sqrt(r)-1)**2
+        return (torch.sqrt(r+1e-8)-1)**2
     
 
 # define cost function h(logr)

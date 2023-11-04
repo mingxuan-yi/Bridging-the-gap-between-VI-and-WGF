@@ -6,11 +6,27 @@ import seaborn as sns
 from rosenbrock import rosenbrock
 import os
 from source.base import gmm, contour_plot, h
-
+import argparse
 sns.set_style("white")
 np.random.seed(2)
 torch.manual_seed(2)
-saveroot = 'banana'
+
+def get_args():
+    parser = argparse.ArgumentParser()
+   
+    
+    parser.add_argument('--saveroot', type=str, default='.')
+    parser.add_argument('--lr', type=float, default=0.01)
+    parser.add_argument('--num_components', type=int, default=5)
+    parser.add_argument('--num_sample', type=int, default=30)
+    parser.add_argument('--num_iter', type=int, default=3001)
+
+
+    return parser.parse_args()
+
+
+args = get_args()
+saveroot = args.saveroot
 
 
 mu = torch.Tensor([1.0])
@@ -19,8 +35,7 @@ b = torch.ones([2, 1])
 
 p_rosen_dist = rosenbrock.RosenbrockDistribution(mu, a, b)
 
-
-def plot_contour(log_p, xlim=[-1, 2.7], ylim=[-2.5, 8], num_grid=100, method='orginal'):
+def plot_contour(log_p, ax, xlim=[-1, 2.7], ylim=[-2.5, 8], num_grid=100, name=r'Target $p(x)$'):
 
     xlist = np.linspace(xlim[0], xlim[1], num_grid)
     ylist = np.linspace(ylim[0], ylim[1], num_grid)
@@ -28,22 +43,18 @@ def plot_contour(log_p, xlim=[-1, 2.7], ylim=[-2.5, 8], num_grid=100, method='or
     XY = np.stack([X.reshape(-1), Y.reshape(-1)], axis=1).astype("float32")
     Z = (log_p(torch.tensor(XY))).exp().reshape([100, 100])
 
-    plt.figure(figsize=(4,4))
-    plt.tick_params(left = False, right = False , labelleft = False ,
-                labelbottom = False, bottom = False)
-    plt.ylim(-4, 8)
-    plt.contour(X, Y, Z, levels=10, cmap='viridis')
-    filepath = os.path.join(saveroot, f"banana-{method}.png")
-    plt.savefig(filepath, bbox_inches='tight', pad_inches=0.1)
-    plt.close()
     
+    ax.tick_params(left = False, right = False , labelleft = False ,
+                labelbottom = False, bottom = False)
+    ax.set_ylim(-4, 8)
+    ax.contour(X, Y, Z, levels=10, cmap='viridis')
+    ax.set_title(name, y=-0.15, size=15)
+
     
 def log_p(x):
     return -p_rosen_dist.nl_pdf(x)
 
-
-
-def train(num_iter=3001, num_groups=5, num_sample_rep=30, method='Rkl', lr=0.01):
+def train(num_iter=args.num_iter, num_groups=args.num_components, num_sample_rep=args.num_sample, method='Rkl', lr=0.01):
 
     q = gmm(num_groups)
 
@@ -59,13 +70,23 @@ def train(num_iter=3001, num_groups=5, num_sample_rep=30, method='Rkl', lr=0.01)
             loss += -q.weights()[k]*(torch.mean(h(r, method)))
         loss.backward()
         opt.step()
-    plot_contour(q.log_prob, method=method)
+    return q
 
 if __name__ == '__main__':
     if not(os.path.isdir(saveroot)):
         os.mkdir(saveroot)
-    plot_contour(log_p)
     train(method='Rkl')
     train(method='Fkl')
     train(method='Chi')
     train(method='Hellinger')
+    
+    fig, axs = plt.subplots(1, 5, figsize=(15, 3.3))
+    plot_contour(log_p, axs[0])
+    plot_contour(q_rkl.log_prob, axs[1], name='Reverse KL')
+    plot_contour(q_fkl.log_prob, axs[2], name='Forward KL')
+    plot_contour(q_chi.log_prob, axs[3], name=r'$\chi^2$')
+    plot_contour(q_hel.log_prob, axs[4], name='Hellinger')
+    fig.tight_layout()
+    filepath = os.path.join(saveroot, "banana_contour.png")
+    plt.savefig(filepath, bbox_inches='tight', pad_inches=0.1)
+    plt.close()
