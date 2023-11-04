@@ -9,8 +9,8 @@ see `notebook/The Illustrative Example.ipynb`
 
 
 
-**2. To reproduce the experiment in Figure 3, run**
->python banana.py
+## 2. The experiment used GMMs as the variational distribution.
+run >python banana.py
 
-**3. To reproduce the experiment in Appendix B.1, run**
+## 3. To reproduce the experiment in Appendix B.1, run
 >python 1d_gmm.py
