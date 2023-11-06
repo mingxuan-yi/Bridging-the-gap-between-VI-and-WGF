@@ -66,7 +66,7 @@ class vi_layer(nn.Module):
         self.weight_rho = nn.Parameter(torch.zeros(self.input_dim, self.output_dim))
         self.bias_rho = nn.Parameter(torch.ones(self.output_dim))
         
-        self.detach=detach
+        self.detach = detach
         
     def std(self, v):
         return F.softplus(v)
@@ -84,7 +84,6 @@ class vi_layer(nn.Module):
     def forward(self, x):
         weight = self.weight_mean + self.std(self.weight_rho) * torch.randn_like(self.weight_mean)
         bias = self.bias_mean + self.std(self.bias_rho) * torch.randn_like(self.bias_mean)                               
-        
         log_prob_w = self.log_prob_q(weight, self.weight_mean, self.weight_rho)
         log_prob_b = self.log_prob_q(bias, self.bias_mean, self.bias_rho)
 
@@ -97,7 +96,6 @@ class vi_Model(nn.Module):
         self.input_dim = input_dim
         self.output_dim = output_dim
         
-        # network with two hidden and one output layer
         self.layer1 = vi_layer(input_dim, output_dim, detach)
         
 
