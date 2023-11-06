@@ -14,6 +14,9 @@ run `python banana.py`. Default parameters: number of mixture components `--num_
 <img src="https://github.com/YiMX/Bridging-the-gap-between-VI-and-WGF/assets/24216379/4a9ea9ac-b307-4ad3-a9d0-bb280a0dab13" width="75%" height="75%">
 
 
+## 3. The experiment on Bayesian logistic regressions.
+run `python train_Bayesian_logistic.py --dataset='ionos' --num_epoch=20001`. Change `--dataset` to `'heart', 'pima', 'wine'` for different UCI dataset. 
 
-## 3. To reproduce the experiment in Appendix B.1, run
+
+## 4. To reproduce the experiment in Appendix B.1, run
 >python 1d_gmm.py
