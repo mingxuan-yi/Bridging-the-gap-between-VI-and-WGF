@@ -5,7 +5,7 @@ import numpy as np
 from source.data_process import dataset
 from source.base import vi_Model, h
 import argparse
-torch.manual_seed(4)
+torch.manual_seed(3)
 np.random.seed(2)
 
 def get_args():

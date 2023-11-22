@@ -10,8 +10,8 @@ def plt_potential_func(log_prob, plt, num_grid=300, xs=[-2, 5], ys=[-2, 4.5], cm
  
     xlist = torch.linspace(xs[0], xs[1], num_grid)
     ylist = torch.linspace(ys[0], ys[1], num_grid)
-    xx, yy = torch.meshgrid(xlist, ylist)
-    z = torch.hstack([xx.reshape(-1, 1), yy.reshape(-1, 1)])
+    xx, yy = np.meshgrid(xlist, ylist)
+    z = np.hstack([xx.reshape(-1, 1), yy.reshape(-1, 1)])
 
     z = torch.Tensor(z)
     u = log_prob(z).cpu().numpy()
